@@ -18,7 +18,10 @@ urlpatterns = [
   #url('api-auth/', include('rest_framework.urls')),
   path('', include(router.urls)),
   url('book-author/', views.BookFilterView.as_view(), name="books-filter"),
-  url('test/', views.TestViewList.as_view(), name="test-view"),
+  url('subscription-amount/', views.SubscriptionAmount.as_view(), name="subscription-filter"),
+  url('subscription-expired/', views.SubscriberDebt.as_view(), name="subscription-filter"),
+  #url('test/', views.SubscriberDebt.as_view(), name="test-view"),
+  #url('testplain/', views.PlainTest, name="test-view"),
 
 
 ]

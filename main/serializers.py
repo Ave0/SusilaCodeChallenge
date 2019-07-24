@@ -22,6 +22,12 @@ class BookSerializer(serializers.HyperlinkedModelSerializer):
         model = Book
         fields = ('title','description','count','subscription_cost','topic', 'author')
 
+class Book2Serializer(serializers.Serializer):
+    costo = serializers.FloatField()
+    
+    class Meta:
+        fields = ('costo',)
+
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -37,6 +43,18 @@ class SubscriptionSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Subscription
         fields = ['subscriber','book','borrowed_date','amount_paid','days','returned']
+
+class Subscription2Serializer(serializers.HyperlinkedModelSerializer):
+    due_amount = serializers.FloatField()
+    class Meta:
+        model = Subscription
+        fields = ['subscriber','book','borrowed_date','amount_paid','days','returned','due_amount']
+
+class Subscription3Serializer(serializers.Serializer):
+    username = serializers.CharField()
+    class Meta:
+        model = Subscription
+        fields = ['username']
 
 
 

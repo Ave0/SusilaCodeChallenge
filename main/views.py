@@ -7,12 +7,13 @@ from rest_framework.generics import GenericAPIView, RetrieveAPIView, RetrieveUpd
 from rest_framework.mixins import ListModelMixin, CreateModelMixin
 from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
-from django.db.models import F
+from django.db.models import F, DateTimeField, IntegerField
 from datetime import datetime, timedelta
 
 from django.shortcuts import get_object_or_404
-from .serializers import BookSerializer, AuthorSerializer, UserSerializer, SubscriberSerializer, SubscriptionSerializer,ContactSerializer
-from django.db.models import Q, Count ,Avg
+from .serializers import BookSerializer, AuthorSerializer, UserSerializer, SubscriberSerializer, SubscriptionSerializer, Subscription2Serializer, ContactSerializer, Book2Serializer
+from django.db.models import Q, Count, Avg, Sum
+from django.http import HttpResponse
 
 
 
@@ -79,13 +80,23 @@ class BookFilterView(ListAPIView):
         return queryset
 
 
+#View for point d)
+class SubscriptionAmount(ListAPIView):
+    queryset = Subscription.objects.all()
+    serializer_class = Subscription2Serializer
+    def get_queryset(self):
+        queryset = Subscription.objects.all().annotate(
+            due_amount=Sum(F('book__subscription_cost')*F('days')-F('amount_paid')))
+        return queryset
 
-
-class TestViewList(ListAPIView):
-    model = Subscription
-    serializer_class = SubscriptionSerializer
-    #For a url like this : http://127.0.0.1:8000/book-author2/?title=Book1
-    def get_queryset(self,*args,**kwargs):
-        queryset = Subscription.objects.aggregate(total=Count('days'))
-
+#it wont work with sqlite since date/time will store as text
+class SubscriberDebt(ListAPIView):
+    queryset = Subscription.objects.all()
+    serializer_class = Subscription2Serializer
+    def get_queryset(self):
+        today = datetime.now()
+        queryset = Subscription.objects.all().annotate(
+            dayspass=Sum(today-F('borrowed_date'),output_field=DateTimeField())
+            ).filter(days__lt=F('dayspass'),returned=False).values('subscriber.user.username')
+        print(queryset[0])
         return queryset

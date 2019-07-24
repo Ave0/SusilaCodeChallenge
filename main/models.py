@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.text import slugify
 from django.contrib.auth.models import User
+from django.db.models import DateTimeField
 
 
 class Contact(models.Model):
@@ -26,6 +27,7 @@ class Book(models.Model):
     author = models.ManyToManyField(Author, related_name='books')
     def __str__(self):
         return self.title
+
 
 class Subscriber(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
